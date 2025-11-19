@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASP Business & ACS Operations Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* DESIGN SYSTEM:
+           - Ratio: 16:9 (1280x720)
+           - Theme: Corporate Tech (Blue/Navy/White)
+           - Concept: Vector, Clean, Animated
+        */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #e2e8f0;
+            margin: 0;
+            min-height: 100vh;
+            padding: 40px 0;
+            font-family: 'Noto Sans JP', 'Poppins', sans-serif;
+            overflow-x: hidden;
+            transition: background-color 0.3s;
+            color: #334155;
+        }
+
+        /* WRAPPER */
+        .slides-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            width: 100%;
+        }
+
+        /* SLIDE CONTAINER */
+        .slide-container {
+            background-color: #ffffff;
+            border-radius: 0; /* Sharper edges for slide feel */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 720px;
+            width: 1280px;
+            justify-content: center;
+            overflow: hidden;
+            padding: 60px;
+            position: relative;
+            flex-shrink: 0;
+            transform-origin: top center;
+        }
+        
+        /* HEADER/FOOTER DECORATION */
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #2563eb, #06b6d4);
+        }
+        
+        .slide-number {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-size: 14px;
+            color: #94a3b8;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* TYPOGRAPHY */
+        h1, h2, h3 {
+            font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+            color: #0f172a;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-size: 64px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 24px;
+            background: linear-gradient(120deg, #0f172a, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 42px;
+            font-weight: 600;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        h2 i {
+            color: #3b82f6;
+            font-size: 32px;
+        }
+
+        h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        p, li, td {
+            color: #475569;
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        strong {
+            color: #0f172a;
+            font-weight: 700;
+            background: linear-gradient(transparent 70%, #bfdbfe 70%);
+        }
+
+        /* LAYOUTS */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 60px;
+            height: 100%;
+            align-items: center;
+        }
+
+        .two-column.reverse { grid-template-columns: 0.9fr 1.1fr; }
+
+        .text-column { display: flex; flex-direction: column; justify-content: center; }
+
+        /* GRAPHIC CONTAINER (Replaces Image) */
+        .graphic-column {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* SVG STYLES */
+        svg { width: 100%; height: 100%; }
+        .anim-pulse { animation: pulse 3s infinite ease-in-out; }
+        .anim-float { animation: float 4s infinite ease-in-out; }
+        .anim-dash { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: dash 3s linear forwards; }
+        
+        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+
+        /* TILED LAYOUT */
+        .tiled-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            width: 100%;
+        }
+
+        .tile {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+        
+        .tile .icon-box {
+            width: 64px;
+            height: 64px;
+            background: #eff6ff;
+            color: #2563eb;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 20px auto;
+        }
+
+        /* TABLE */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        th { background: #1e293b; color: #ffffff; padding: 16px 24px; text-align: left; font-size: 16px; }
+        td { padding: 16px 24px; border-bottom: 1px solid #e2e8f0; font-size: 16px; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        .term-cell { color: #2563eb; font-weight: 700; white-space: nowrap;}
+
+        /* DEFINITION LIST */
+        .definition-item { 
+            margin-bottom: 20px; 
+            padding: 16px; 
+            background: #fff; 
+            border-left: 4px solid #cbd5e1; 
+            border-radius: 0 8px 8px 0;
+            transition: border-color 0.2s;
+        }
+        .definition-item:hover { border-left-color: #3b82f6; background: #f8fafc; }
+        .definition-item h4 { font-size: 19px; margin-bottom: 4px; color: #1e293b; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .definition-item p { font-size: 15px; margin: 0; color: #64748b; }
+
+        /* PRESENTATION CONTROLS */
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            background-color: #0f172a;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        .control-btn:hover { background-color: #334155; transform: translateY(-2px); }
+
+        /* PRESENTATION MODE STYLES */
+        body.presentation-mode {
+            background-color: #000;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 0;
+        }
+        body.presentation-mode .slides-wrapper { width: 100vw; height: 100vh; }
+        body.presentation-mode .slide-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: none;
+        }
+        body.presentation-mode .slide-container.active { opacity: 1; visibility: visible; z-index: 10; }
+
+        /* SVG Specific Animations & Styles */
+        .chart-bar { transition: height 1s ease-out; transform-origin: bottom; }
+        .flow-line { stroke-dasharray: 20; animation: flow 1s linear infinite; }
+        @keyframes flow { to { stroke-dashoffset: -40; } }
+
+        /* Custom Title Slide Graphic */
+        .title-graphic {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        .node { fill: #3b82f6; }
+        .link { stroke: #cbd5e1; stroke-width: 2; }
+    </style>
+</head>
+<body>
+
+<div class="slides-wrapper" id="slidesWrapper">
+
+    <!-- Slide 1: Title -->
+    <div class="slide-container active" id="slide1">
+        <div class="two-column">
+            <div class="text-column">
+                <div style="color: #3b82f6; font-weight: 700; margin-bottom: 16px; letter-spacing: 2px; text-transform: uppercase;">Professional Guide</div>
+                <h1>ASP実務・ACS運用<br>のポイント</h1>
+                <p style="font-size: 20px; color: #64748b; margin-top: 10px;">
+                    カテゴリー別用語解説と基礎知識<br>
+                    <span style="font-size: 16px; opacity: 0.8;">Operational Points & Key Terminology</span>
+                </p>
+            </div>
+            <div class="graphic-column" style="background: transparent;">
+                <!-- Abstract Network SVG -->
+                <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Center Node -->
+                    <circle cx="200" cy="200" r="40" fill="url(#grad1)" class="anim-pulse" />
+                    <!-- Surrounding Nodes -->
+                    <circle cx="100" cy="100" r="15" fill="#93c5fd" class="anim-float" style="animation-delay: 0s;" />
+                    <line x1="175" y1="175" x2="110" y2="110" stroke="#cbd5e1" stroke-width="2" />
+                    
+                    <circle cx="300" cy="100" r="20" fill="#60a5fa" class="anim-float" style="animation-delay: 1s;" />
+                    <line x1="225" y1="175" x2="285" y2="115" stroke="#cbd5e1" stroke-width="2" />
+
+                    <circle cx="320" cy="300" r="15" fill="#93c5fd" class="anim-float" style="animation-delay: 2s;" />
+                    <line x1="225" y1="225" x2="305" y2="290" stroke="#cbd5e1" stroke-width="2" />
+
+                    <circle cx="80" cy="280" r="25" fill="#60a5fa" class="anim-float" style="animation-delay: 0.5s;" />
+                    <line x1="170" y1="220" x2="95" y2="270" stroke="#cbd5e1" stroke-width="2" />
+                    
+                    <text x="200" y="205" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold" font-size="14">ASP</text>
+                </svg>
+            </div>
+        </div>
+        <div class="slide-number">01 / 12</div>
+    </div>
+
+    <!-- Slide 2: Basics -->
+    <div class="slide-container" id="slide2">
+        <h2><i class="fa-solid fa-layer-group"></i> 1. 基礎・役割 (Foundation & Roles)</h2>
+        <div class="tiled-content" style="margin-top: 40px;">
+            <div class="tile">
+                <div class="icon-box"><i class="fa-solid fa-store"></i></div>
+                <h3>Merchant<br>(広告主)</h3>
+                <p style="font-size: 14px;">商品を販売し広告費を払う企業。<br>売上の源泉。</p>
+            </div>
+            <div class="tile">
+                <div class="icon-box"><i class="fa-solid fa-laptop-code"></i></div>
+                <h3>Partner<br>(メディア)</h3>
+                <p style="font-size: 14px;">集客を行うアフィリエイター。<br>大切な仕入先。</p>
+            </div>
+            <div class="tile">
+                <div class="icon-box"><i class="fa-solid fa-users"></i></div>
+                <h3>User<br>(購入者)</h3>
+                <p style="font-size: 14px;">エンドユーザー。<br>ITP等の影響を受ける。</p>
+            </div>
+            <div class="tile">
+                <div class="icon-box"><i class="fa-solid fa-network-wired"></i></div>
+                <h3>ASP<br>(仲介)</h3>
+                <p style="font-size: 14px;">調整、システム提供、<br>金銭管理のハブ。</p>
+            </div>
+        </div>
+        <div class="slide-number">02 / 12</div>
+    </div>
+
+    <!-- Slide 3: Metrics 1 -->
+    <div class="slide-container" id="slide3">
+        <h2><i class="fa-solid fa-chart-simple"></i> 2. 重要指標 (Metrics 1/2)</h2>
+        <div class="two-column">
+            <div class="text-column">
+                <div class="definition-item">
+                    <h4><i class="fa-regular fa-eye"></i> IMP (Impression)</h4>
+                    <p>広告表示回数。テキスト広告などでは計測できない場合も。</p>
+                </div>
+                <div class="definition-item">
+                    <h4><i class="fa-solid fa-arrow-pointer"></i> CT (Click Through)</h4>
+                    <p>クリック数。「CTがあるのにCVがない」＝LPの問題を疑う。</p>
+                </div>
+                <div class="definition-item">
+                    <h4><i class="fa-solid fa-percent"></i> CTR (Click Rate)</h4>
+                    <p>クリック率 (CT ÷ IMP)。バナーの魅力度指標。</p>
+                </div>
+                <div class="definition-item">
+                    <h4><i class="fa-solid fa-cart-arrow-down"></i> CV (Conversion)</h4>
+                    <p>成果発生数。まだ売上未確定の速報値。</p>
+                </div>
+            </div>
+            <div class="graphic-column">
+                <!-- Animated Bar Chart SVG -->
+                <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Axes -->
+                    <line x1="40" y1="260" x2="360" y2="260" stroke="#cbd5e1" stroke-width="2"/>
+                    <line x1="40" y1="260" x2="40" y2="40" stroke="#cbd5e1" stroke-width="2"/>
+                    
+                    <!-- Bars -->
+                    <rect x="70" y="150" width="40" height="110" fill="#93c5fd" class="chart-bar">
+                        <animate attributeName="height" from="0" to="110" dur="1s" fill="freeze" />
+                        <animate attributeName="y" from="260" to="150" dur="1s" fill="freeze" />
+                    </rect>
+                    <text x="90" y="280" text-anchor="middle" fill="#64748b" font-size="12">IMP</text>
+
+                    <rect x="150" y="180" width="40" height="80" fill="#60a5fa" class="chart-bar">
+                        <animate attributeName="height" from="0" to="80" dur="1s" begin="0.2s" fill="freeze" />
+                        <animate attributeName="y" from="260" to="180" dur="1s" begin="0.2s" fill="freeze" />
+                    </rect>
+                    <text x="170" y="280" text-anchor="middle" fill="#64748b" font-size="12">CT</text>
+
+                    <rect x="230" y="220" width="40" height="40" fill="#3b82f6" class="chart-bar">
+                        <animate attributeName="height" from="0" to="40" dur="1s" begin="0.4s" fill="freeze" />
+                        <animate attributeName="y" from="260" to="220" dur="1s" begin="0.4s" fill="freeze" />
+                    </rect>
+                    <text x="250" y="280" text-anchor="middle" fill="#64748b" font-size="12">CV</text>
+
+                    <rect x="310" y="100" width="40" height="160" fill="#2563eb" class="chart-bar">
+                        <animate attributeName="height" from="0" to="160" dur="1s" begin="0.6s" fill="freeze" />
+                        <animate attributeName="y" from="260" to="100" dur="1s" begin="0.6s" fill="freeze" />
+                    </rect>
+                    <text x="330" y="280" text-anchor="middle" fill="#64748b" font-size="12">ROAS</text>
+                    
+                    <!-- Dashed Goal Line -->
+                    <line x1="40" y1="100" x2="360" y2="100" stroke="#fbbf24" stroke-width="2" stroke-dasharray="5,5" />
+                    <text x="360" y="90" text-anchor="end" fill="#fbbf24" font-size="10">GOAL</text>
+                </svg>
+            </div>
+        </div>
+        <div class="slide-number">03 / 12</div>
+    </div>
+
+    <!-- Slide 4: Metrics 2 -->
+    <div class="slide-container" id="slide4">
+        <h2><i class="fa-solid fa-calculator"></i> 2. 重要指標 (Metrics 2/2)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th width="20%">用語 (Term)</th>
+                    <th width="35%">意味・計算式</th>
+                    <th width="45%">実務ポイント (Key Point)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="term-cell">CVR (Conversion Rate)</td>
+                    <td>転換率 (CV ÷ CT)</td>
+                    <td><strong>最重要指標</strong>。「この案件はCVRが高い」は営業最強の武器。</td>
+                </tr>
+                <tr>
+                    <td class="term-cell">EPC (Earn Per Click)</td>
+                    <td>1クリックあたりの収益</td>
+                    <td>「単価が低くてもEPCが高い（＝稼げる）」とメディアを説得する基準。</td>
+                </tr>
+                <tr>
+                    <td class="term-cell">ROAS (Return On Ad Spend)</td>
+                    <td>広告費用対効果</td>
+                    <td>広告主の目標値。例:「ROAS 200%（広告費の2倍売れた）」を目指す。</td>
+                </tr>
+                <tr>
+                    <td class="term-cell">CPA (Cost Per Action)</td>
+                    <td>1件獲得コスト</td>
+                    <td>広告主の「限界CPA」を聞き出し、報酬を設定する。</td>
+                </tr>
+                <tr>
+                    <td class="term-cell">LTV (Life Time Value)</td>
+                    <td>顧客生涯価値</td>
+                    <td>リピート率が高い商品は、LTVを根拠に高単価交渉が可能。</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="slide-number">04 / 12</div>
+    </div>
+
+    <!-- Slide 5: System -->
+    <div class="slide-container" id="slide5">
+        <h2><i class="fa-solid fa-server"></i> 3. システム (Tracking)</h2>
+        <div class="two-column">
+            <div class="text-column">
+                <div class="definition-item">
+                    <h4>ソケット通信 (S2S)</h4>
+                    <p><strong>業界標準</strong>。サーバ間通信。Cookieに頼らず確実な計測が可能。</p>
+                </div>
+                <div class="definition-item">
+                    <h4>Cookie / ITP</h4>
+                    <p>ブラウザの「足跡」。ITP規制により信頼性が低下し補助的役割へ。</p>
+                </div>
+                <div class="definition-item">
+                    <h4>トラッキングURL</h4>
+                    <p>計測用タグ。貼り間違えると成果にならないため注意。</p>
+                </div>
+            </div>
+            <div class="graphic-column" style="background: #1e293b;">
+                <!-- S2S Tracking Diagram -->
+                <svg viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+                    <!-- User -->
+                    <g transform="translate(50, 130)">
+                        <circle cx="0" cy="0" r="25" fill="#fff"/>
+                        <text x="0" y="40" text-anchor="middle" fill="#fff" font-size="12">USER</text>
+                    </g>
+                    
+                    <!-- ASP Server -->
+                    <g transform="translate(250, 80)">
+                        <rect x="-30" y="-20" width="60" height="40" rx="5" fill="#3b82f6"/>
+                        <text x="0" y="5" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">ASP</text>
+                    </g>
+
+                    <!-- Merchant Server -->
+                    <g transform="translate(450, 130)">
+                        <rect x="-30" y="-30" width="60" height="60" rx="5" fill="#22c55e"/>
+                        <text x="0" y="5" text-anchor="middle" fill="#fff" font-size="12">Shop</text>
+                    </g>
+
+                    <!-- Flow Lines -->
+                    <!-- User -> ASP -->
+                    <path d="M 75 130 Q 150 80 210 80" fill="none" stroke="#60a5fa" stroke-width="3" class="flow-line"/>
+                    <!-- ASP -> Merchant (Redirect) -->
+                    <path d="M 280 80 Q 350 80 410 120" fill="none" stroke="#60a5fa" stroke-width="3" class="flow-line" style="animation-delay: 0.5s"/>
+                    
+                    <!-- Merchant -> ASP (Postback/S2S) -->
+                    <path d="M 420 140 Q 350 180 250 180 Q 150 180 100 150" fill="none" stroke="none" /> <!-- path definition only -->
+                    
+                    <!-- S2S Back Channel -->
+                    <path d="M 420 150 Q 350 220 250 110" fill="none" stroke="#fbbf24" stroke-width="3" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+                    <text x="350" y="200" fill="#fbbf24" font-size="12">S2S (CV Data)</text>
+
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+        <div class="slide-number">05 / 12</div>
+    </div>
+
+    <!-- Slide 6: Settings -->
+    <div class="slide-container" id="slide6">
+        <h2><i class="fa-solid fa-gears"></i> 3. 設定・トラブル (Config)</h2>
+        <div class="tiled-content">
+            <div class="tile">
+                <div class="icon-box"><i class="fa-solid fa-vial"></i></div>
+                <h3>疎通テスト<br>(Test CV)</h3>
+                <p><strong>絶対必須</strong>。本番前に購入テストを行う。未実施は事故の元。</p>
+            </div>
+            <div class="tile">
+                <div class="icon-box"><i class="fa-solid fa-clone"></i></div>
+                <h3>重複成果<br>(Duplication)</h3>
+                <p>同じ注文が2回計上されるエラー。完了画面リロード等で発生。</p>
+            </div>
+            <div class="tile">
+                <div class="icon-box"><i class="fa-solid fa-arrow-right-to-bracket"></i></div>
+                <h3>ダイレクト<br>リンク</h3>
+                <p>直接広告主へ飛ぶ方式。SEOに強く有力ブロガーに好まれる。</p>
+            </div>
+            <div class="tile">
+                <div class="icon-box"><i class="fa-solid fa-shuffle"></i></div>
+                <h3>リダイレクト<br>方式</h3>
+                <p>ASPを一瞬経由する基本方式。設定は簡単。</p>
+            </div>
+        </div>
+        <div class="slide-number">06 / 12</div>
+    </div>
+
+    <!-- Slide 7: Operations -->
+    <div class="slide-container" id="slide7">
+        <h2><i class="fa-regular fa-pen-to-square"></i> 4. 運用・素材 (Operation)</h2>
+        <div class="two-column reverse">
+             <div class="graphic-column">
+                <!-- LP Structure SVG -->
+                <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Article LP -->
+                    <rect x="40" y="40" width="100" height="140" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+                    <rect x="50" y="50" width="80" height="10" fill="#e2e8f0"/>
+                    <rect x="50" y="70" width="60" height="60" fill="#f1f5f9"/>
+                    <rect x="50" y="140" width="40" height="10" fill="#3b82f6" rx="5"/>
+                    <text x="90" y="170" fill="#64748b" font-size="10" text-anchor="middle">記事LP</text>
+
+                    <!-- Arrow -->
+                    <path d="M 150 110 L 190 110" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrowblue)"/>
+
+                    <!-- LP -->
+                    <rect x="200" y="40" width="80" height="200" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+                    <rect x="210" y="50" width="60" height="30" fill="#fca5a5"/> <!-- Header -->
+                    <rect x="210" y="90" width="60" height="100" fill="#fff5f5"/> <!-- Body -->
+                    <rect x="210" y="200" width="60" height="20" fill="#ef4444" rx="5"/> <!-- Button -->
+                    <text x="240" y="235" fill="#64748b" font-size="10" text-anchor="middle">本LP (CV)</text>
+
+                    <defs>
+                        <marker id="arrowblue" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+            <div class="text-column">
+                <ul>
+                    <li><strong>クリエイティブ</strong>: バナー等の素材。「入稿」＝ACSへの登録。</li>
+                    <li><strong>テキストリンク</strong>: 文字だけの広告。記事に馴染みCVRが高い。</li>
+                    <li><strong>記事LP (Bridge Page)</strong>: 広告の前に挟むクッションページ。CVR向上の鍵。</li>
+                    <li><strong>全承認</strong>: 不正以外全て承認する条件。メディア獲得の強力なカード。</li>
+                    <li><strong>特単 (Special Rate)</strong>: 有力メディア限定の高報酬。</li>
+                </ul>
+            </div>
+        </div>
+        <div class="slide-number">07 / 12</div>
+    </div>
+
+    <!-- Slide 8: Legal -->
+    <div class="slide-container" id="slide8">
+        <h2><i class="fa-solid fa-scale-balanced"></i> 5. 法務・リスク (Legal)</h2>
+        <div class="two-column">
+            <div class="text-column">
+                <div class="definition-item" style="border-left-color: #ef4444;">
+                    <h4>ステマ規制・景表法</h4>
+                    <p>「PR」表記義務と、嘘・大げさな表示（No.1等）の禁止。根拠（エビデンス）が必須。</p>
+                </div>
+                <div class="definition-item" style="border-left-color: #ef4444;">
+                    <h4>薬機法</h4>
+                    <p>医薬品・化粧品等の表現規制。「治る」「痩せる」の断定はNG。</p>
+                </div>
+                <div class="definition-item" style="border-left-color: #ef4444;">
+                    <h4>商標リスティング</h4>
+                    <p>検索広告で「商品名」を入札する行為。広告主の予算を食うため<strong>厳禁</strong>。</p>
+                </div>
+                <div class="definition-item" style="border-left-color: #ef4444;">
+                    <h4>アドフラウド (不正)</h4>
+                    <p>bot等による不正成果。異常なCVRや同一IPを監視・排除する。</p>
+                </div>
+            </div>
+            <div class="graphic-column">
+                <!-- Shield Icon SVG -->
+                <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M150 30 L260 70 V140 C260 210 210 260 150 280 C90 260 40 210 40 140 V70 L150 30 Z" fill="#e2e8f0" stroke="#334155" stroke-width="2"/>
+                    <path d="M120 150 L145 175 L185 115" fill="none" stroke="#22c55e" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" class="anim-dash"/>
+                    <text x="150" y="220" text-anchor="middle" font-family="sans-serif" font-weight="bold" fill="#475569" font-size="24">COMPLIANCE</text>
+                </svg>
+            </div>
+        </div>
+        <div class="slide-number">08 / 12</div>
+    </div>
+
+    <!-- Slide 9: Finance -->
+    <div class="slide-container" id="slide9">
+        <h2><i class="fa-solid fa-yen-sign"></i> 6. 経理・金銭 (Finance)</h2>
+        <div class="tiled-content" style="grid-template-columns: repeat(3, 1fr);">
+            <div class="tile">
+                <div class="icon-box" style="background: #f0fdf4; color: #16a34a;"><i class="fa-regular fa-circle-check"></i></div>
+                <h3>承認 (Approved)</h3>
+                <p>正当な成果と確定。<br>売上と支払義務が発生。</p>
+            </div>
+            <div class="tile">
+                <div class="icon-box" style="background: #fef2f2; color: #dc2626;"><i class="fa-regular fa-circle-xmark"></i></div>
+                <h3>非承認 (Rejected)</h3>
+                <p>未入金や重複で却下。<br>理由の明確化が必要。</p>
+            </div>
+            <div class="tile">
+                <div class="icon-box" style="background: #fff7ed; color: #ea580c;"><i class="fa-solid fa-coins"></i></div>
+                <h3>デポジット</h3>
+                <p>予納金。<br>未回収リスクを防ぐため預かる。</p>
+            </div>
+        </div>
+        <div style="margin-top: 30px; background: #f1f5f9; padding: 20px; border-radius: 12px;">
+            <strong><i class="fa-solid fa-circle-info"></i> 補足:</strong>
+            最低支払額（例:3000円）に満たない場合は翌月に<strong>キャリーオーバー（繰越）</strong>される。
+        </div>
+        <div class="slide-number">09 / 12</div>
+    </div>
+
+    <!-- Slide 10: Tech -->
+    <div class="slide-container" id="slide10">
+        <h2><i class="fa-solid fa-code"></i> 7. 技術・設定 (Tech)</h2>
+        <div class="two-column">
+            <div class="text-column">
+                <div class="definition-item">
+                    <h4>CNAME (独自ドメイン)</h4>
+                    <p>計測URLを自社ドメイン化。信頼性と計測精度が向上。</p>
+                </div>
+                <div class="definition-item">
+                    <h4>SSL化 (HTTPS)</h4>
+                    <p>通信の暗号化。必須。非対応だとブラウザ警告が出る。</p>
+                </div>
+                <div class="definition-item">
+                    <h4>API / バッチ処理</h4>
+                    <p>データの自動連携、またはCSVによる一括登録。</p>
+                </div>
+            </div>
+            <div class="graphic-column" style="background: transparent;">
+                <!-- Cloud/Tech SVG -->
+                <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                     <rect x="60" y="180" width="180" height="20" rx="10" fill="#cbd5e1"/>
+                     <rect x="60" y="210" width="180" height="20" rx="10" fill="#cbd5e1"/>
+                     
+                     <!-- Cloud -->
+                     <path d="M90 140 C70 140 50 120 50 100 C50 75 70 60 90 60 C100 40 140 30 160 50 C180 30 220 40 230 70 C250 70 260 90 260 110 C260 140 230 150 200 150 H90" fill="#3b82f6" class="anim-float"/>
+                     
+                     <text x="150" y="110" text-anchor="middle" fill="white" font-weight="bold" font-family="sans-serif">API</text>
+                     
+                     <!-- Connection Lines -->
+                     <line x1="100" y1="150" x2="100" y2="180" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4"/>
+                     <line x1="200" y1="150" x2="200" y2="180" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4"/>
+                </svg>
+            </div>
+        </div>
+        <div class="slide-number">10 / 12</div>
+    </div>
+
+    <!-- Slide 11: Strategy -->
+    <div class="slide-container" id="slide11">
+        <h2><i class="fa-regular fa-chess-knight"></i> 8. 戦略・その他 (Strategy)</h2>
+        <div class="tiled-content">
+             <div class="tile">
+                <div class="icon-box"><i class="fa-solid fa-lock"></i></div>
+                <h3>クローズドASP</h3>
+                <p>招待制・審査制。<br>案件の質や単価の高さを売りにする。</p>
+            </div>
+            <div class="tile">
+                <div class="icon-box"><i class="fa-solid fa-basket-shopping"></i></div>
+                <h3>自社買い</h3>
+                <p>パートナー自身の購入（Self Back）。<br>初期稼働率を上げる施策。</p>
+            </div>
+            <div class="tile">
+                <div class="icon-box"><i class="fa-regular fa-handshake"></i></div>
+                <h3>タイアップ</h3>
+                <p>固定費を払い、特定メディアと組んで特集記事などを実施。</p>
+            </div>
+            <div class="tile">
+                <div class="icon-box"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                <h3>アトリビューション</h3>
+                <p>成果貢献度の評価。<br>「認知」か「最後」か。</p>
+            </div>
+        </div>
+        <div class="slide-number">11 / 12</div>
+    </div>
+
+    <!-- Slide 12: Q&A -->
+    <div class="slide-container" id="slide12">
+        <div style="text-align: center;">
+            <div style="font-size: 80px; color: #3b82f6; margin-bottom: 20px;">
+                <i class="fa-regular fa-comments" class="anim-float"></i>
+            </div>
+            <h1>Q & A</h1>
+            <p style="font-size: 24px; color: #64748b;">ご質問等はございますか？</p>
+        </div>
+        <div class="slide-number">12 / 12</div>
+    </div>
+
+</div>
+
+<!-- Controls -->
+<div id="controls">
+    <button class="control-btn" onclick="togglePresentationMode()">
+        <i class="fa-solid fa-play"></i> スライドショー (全画面)
+    </button>
+</div>
+
+<script>
+    const SLIDE_WIDTH = 1280;
+    const SLIDE_HEIGHT = 720;
+    let isPresentationMode = false;
+    let currentSlideIndex = 0;
+    const slides = document.querySelectorAll('.slide-container');
+
+    // --- RESPONSIVE SCALING ---
+    function fitSlides() {
+        if (isPresentationMode) {
+            fitSlidesPresentation();
+        } else {
+            fitSlidesScroll();
+        }
+    }
+
+    function fitSlidesScroll() {
+        const padding = 40;
+        const availableWidth = window.innerWidth - padding * 2;
+        const scale = Math.min(1, availableWidth / SLIDE_WIDTH);
+        
+        slides.forEach(slide => {
+            slide.style.transform = `scale(${scale})`;
+            const heightDiff = SLIDE_HEIGHT * (1 - scale);
+            slide.style.marginBottom = `-${heightDiff}px`;
+            slide.style.position = 'relative';
+            slide.style.top = 'auto';
+            slide.style.left = 'auto';
+            slide.style.opacity = '1';
+            slide.style.visibility = 'visible';
+        });
+    }
+
+    function fitSlidesPresentation() {
+        const scaleW = window.innerWidth / SLIDE_WIDTH;
+        const scaleH = window.innerHeight / SLIDE_HEIGHT;
+        const scale = Math.min(scaleW, scaleH);
+
+        slides.forEach((slide, index) => {
+            slide.style.transform = `translate(-50%, -50%) scale(${scale})`;
+            slide.style.position = 'absolute';
+            slide.style.top = '50%';
+            slide.style.left = '50%';
+            slide.style.marginBottom = '0';
+            
+            if (index === currentSlideIndex) {
+                slide.classList.add('active');
+            } else {
+                slide.classList.remove('active');
+            }
+        });
+    }
+
+    window.addEventListener('resize', fitSlides);
+    window.addEventListener('load', fitSlides);
+    fitSlides();
+
+    // --- PRESENTATION LOGIC ---
+    function togglePresentationMode() {
+        const body = document.body;
+        const btn = document.querySelector('.control-btn');
+        
+        if (!isPresentationMode) {
+            isPresentationMode = true;
+            body.classList.add('presentation-mode');
+            currentSlideIndex = 0;
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(e => console.log(e));
+            }
+            btn.innerHTML = '<i class="fa-solid fa-xmark"></i> 終了 (ESC)';
+        } else {
+            exitPresentationMode();
+        }
+        fitSlides();
+    }
+
+    function exitPresentationMode() {
+        isPresentationMode = false;
+        document.body.classList.remove('presentation-mode');
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        }
+        document.querySelector('.control-btn').innerHTML = '<i class="fa-solid fa-play"></i> スライドショー (全画面)';
+        fitSlides();
+    }
+
+    function nextSlide() {
+        if (!isPresentationMode) return;
+        if (currentSlideIndex < slides.length - 1) {
+            currentSlideIndex++;
+            fitSlides();
+        }
+    }
+
+    function prevSlide() {
+        if (!isPresentationMode) return;
+        if (currentSlideIndex > 0) {
+            currentSlideIndex--;
+            fitSlides();
+        }
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (!isPresentationMode) return;
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') nextSlide();
+        else if (e.key === 'ArrowLeft') prevSlide();
+        else if (e.key === 'Escape') exitPresentationMode();
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement && isPresentationMode) exitPresentationMode();
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!isPresentationMode || e.target.closest('#controls')) return;
+        e.clientX > window.innerWidth / 2 ? nextSlide() : prevSlide();
+    });
+
+</script>
+</body>
+</html>
